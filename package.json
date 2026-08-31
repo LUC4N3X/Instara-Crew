@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit",
     "test:guardrails": "tsx scripts/guardrails.ts",
     "test:selftest": "tsx scripts/selftest.ts",
-    "test": "npm run typecheck && npm run test:guardrails && npm run test:selftest"
+    "test:android": "tsx scripts/android-selftest.ts",
+    "test": "npm run typecheck && npm run test:guardrails && npm run test:selftest && npm run test:android"
   },
   "dependencies": {
     "@google/genai": "^2.19.0",

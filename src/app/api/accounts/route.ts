@@ -1,10 +1,14 @@
 import { db } from "@/lib/db";
 import { z } from "zod";
 import { parseProxy } from "@/lib/proxy";
+import { validateAdbSerial, validateAndroidPackage } from "@/lib/android";
 
 const inputSchema = z.object({
   username: z.string().trim().min(1).max(80),
   label: z.string().trim().max(120).optional().nullable(),
+  executionEngine: z.enum(["BROWSER", "ANDROID_ADB"]).optional(),
+  adbSerial: z.string().trim().max(200).optional().nullable(),
+  androidPackage: z.string().trim().max(200).optional().nullable(),
   proxyUrl: z.string().trim().max(500).optional().nullable(),
   devicePreset: z.enum(["PIXEL_7", "GALAXY_S24", "IPHONE_15_PRO", "DESKTOP", "CUSTOM"]).optional(),
   customUserAgent: z.string().trim().max(1000).optional().nullable(),
@@ -35,10 +39,21 @@ export async function POST(request: Request) {
 
   const cleanUsername = input.username.replace(/^@/, "");
   const profileKey = cleanUsername.toLowerCase().replace(/[^a-z0-9_-]+/g, "_");
+  const executionEngine = input.executionEngine || "BROWSER";
 
-  // Validate proxy format if provided
+  let adbSerial: string | null = null;
+  let androidPackage = "com.instagram.android";
+  if (executionEngine === "ANDROID_ADB") {
+    try {
+      adbSerial = validateAdbSerial(input.adbSerial || "");
+      androidPackage = validateAndroidPackage(input.androidPackage);
+    } catch (error) {
+      return Response.json({ error: error instanceof Error ? error.message : String(error) }, { status: 400 });
+    }
+  }
+
   let cleanProxyUrl: string | null = null;
-  if (input.proxyUrl && input.proxyUrl.trim().length > 0) {
+  if (executionEngine === "BROWSER" && input.proxyUrl && input.proxyUrl.trim().length > 0) {
     const parsed = parseProxy(input.proxyUrl);
     if (!parsed) {
       return Response.json(
@@ -60,6 +75,9 @@ export async function POST(request: Request) {
       username: cleanUsername,
       label: input.label || null,
       profileKey,
+      executionEngine,
+      adbSerial,
+      androidPackage,
       proxyUrl: cleanProxyUrl,
       devicePreset: input.devicePreset || "PIXEL_7",
       customUserAgent: input.customUserAgent || null,

@@ -1,9 +1,13 @@
 import { db } from "@/lib/db";
 import { z } from "zod";
 import { parseProxy } from "@/lib/proxy";
+import { validateAdbSerial, validateAndroidPackage } from "@/lib/android";
 
 const patchSchema = z.object({
   label: z.string().trim().max(120).optional().nullable(),
+  executionEngine: z.enum(["BROWSER", "ANDROID_ADB"]).optional(),
+  adbSerial: z.string().trim().max(200).optional().nullable(),
+  androidPackage: z.string().trim().max(200).optional().nullable(),
   proxyUrl: z.string().trim().max(500).optional().nullable(),
   devicePreset: z.enum(["PIXEL_7", "GALAXY_S24", "IPHONE_15_PRO", "DESKTOP", "CUSTOM"]).optional(),
   customUserAgent: z.string().trim().max(1000).optional().nullable(),
@@ -33,8 +37,25 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   const account = await db.account.findUnique({ where: { id } });
   if (!account) return Response.json({ error: "Account non trovato" }, { status: 404 });
 
-  // Validate proxy format if provided
-  if (input.proxyUrl !== undefined && input.proxyUrl !== null && input.proxyUrl.trim().length > 0) {
+  const executionEngine = input.executionEngine ?? account.executionEngine;
+  let adbSerial = input.adbSerial !== undefined ? input.adbSerial?.trim() || null : account.adbSerial;
+  let androidPackage = input.androidPackage !== undefined ? input.androidPackage?.trim() || "com.instagram.android" : account.androidPackage;
+
+  if (executionEngine === "ANDROID_ADB") {
+    try {
+      adbSerial = validateAdbSerial(adbSerial || "");
+      androidPackage = validateAndroidPackage(androidPackage);
+    } catch (error) {
+      return Response.json({ error: error instanceof Error ? error.message : String(error) }, { status: 400 });
+    }
+  }
+
+  if (
+    executionEngine === "BROWSER" &&
+    input.proxyUrl !== undefined &&
+    input.proxyUrl !== null &&
+    input.proxyUrl.trim().length > 0
+  ) {
     const parsed = parseProxy(input.proxyUrl);
     if (!parsed) {
       return Response.json(
@@ -54,7 +75,15 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     where: { id },
     data: {
       ...input,
-      proxyUrl: input.proxyUrl !== undefined ? (input.proxyUrl?.trim() || null) : account.proxyUrl,
+      executionEngine,
+      adbSerial,
+      androidPackage,
+      proxyUrl:
+        executionEngine === "ANDROID_ADB"
+          ? null
+          : input.proxyUrl !== undefined
+            ? input.proxyUrl?.trim() || null
+            : account.proxyUrl,
       minDelaySec,
       maxDelaySec,
     },

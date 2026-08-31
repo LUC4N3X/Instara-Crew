@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: postgresql://instara:instara@127.0.0.1:5432/instara?schema=public
+      REDIS_URL: redis://127.0.0.1:6379
+      BROWSER_HEADLESS: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Typecheck + guardrails + offline self-tests
+        run: npm test
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-android.txt
+
+      - name: Install Android bridge dependency
+        run: python -m pip install -r requirements-android.txt
+
+      - name: Validate Android bridge
+        run: |
+          python -c "import uiautomator2; print('uiautomator2 import OK')"
+          python scripts/android_bridge.py --selftest
+
+      - name: Production build
+        run: npm run build
