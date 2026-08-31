@@ -4,7 +4,7 @@
 
 <br />
 
-# ✦ Instara Crew
+# Instara Crew
 
 > [!WARNING]
 > 🚧 **ACTIVE DEVELOPMENT — EXPERIMENTAL SOFTWARE**  
@@ -12,15 +12,11 @@
 
 ### A self-hosted control center for managing Instagram workflows across multiple authorized accounts, with AI-assisted content preparation and operator-controlled execution.
 
-<br />
-
-[What it does](#what-instara-crew-does) · [How it works](#how-it-works) · [Features](#main-features) · [Quick Start](#quick-start) · [Legal](#legal--responsible-use)
-
 </div>
 
 ---
 
-## What Instara Crew Does
+## 🎛️ What Instara Crew Does
 
 **Instara Crew brings multi-account Instagram workflow management into one dashboard.**
 
@@ -43,7 +39,7 @@ With Instara Crew you can:
 
 ---
 
-## How It Works
+## 🧵 How It Works
 
 ### 1. Add your accounts
 
@@ -69,7 +65,7 @@ You can follow what is ready, running, completed, skipped or failed and use paus
 
 ---
 
-## Main Features
+## 🧰 Main Features
 
 ### Multi-account workspace
 
@@ -105,7 +101,7 @@ Instara Crew includes configurable execution limits and pause/cancel controls in
 
 ---
 
-## Quick Start
+## 🛠️ Quick Start
 
 Requirements: **Node.js 20+**, **npm**, **Docker + Compose** and **Google Cloud CLI** if using Gemini through Vertex AI.
 
@@ -219,7 +215,7 @@ This documentation provides general project information only and does not consti
 
 Created and maintained by **[LUC4N3X](https://github.com/LUC4N3X)**.
 
-If Instara Crew is useful to you, consider giving the repository a ⭐.
+If Instara Crew is useful to you, consider starring the repository.
 
 <div align="center">
 
