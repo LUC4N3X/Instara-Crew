@@ -19,11 +19,11 @@
 </p>
 
 <p align="center">
-  <a href="#-architecture">Architecture</a> &nbsp;•&nbsp;
+  <a href="#-system-architecture">Architecture</a> &nbsp;•&nbsp;
   <a href="#-key-features">Features</a> &nbsp;•&nbsp;
   <a href="#-quickstart">Quickstart</a> &nbsp;•&nbsp;
-  <a href="#-testing">Testing</a> &nbsp;•&nbsp;
-  <a href="#-legal-disclaimer">Legal Disclaimer</a> &nbsp;•&nbsp;
+  <a href="#-testing--verification">Testing</a> &nbsp;•&nbsp;
+  <a href="#-legal-disclaimer--limitation-of-liability">Legal Disclaimer</a> &nbsp;•&nbsp;
   <a href="#-license">License</a>
 </p>
 
@@ -31,38 +31,51 @@
 
 ---
 
-## ✦ Architecture
+## 🏛️ System Architecture
 
-Instara Crew provides a unified operations dashboard backed by two dedicated execution engines:
+Instara Crew connects an intelligent Multimodal AI processing pipeline with two specialized execution engines:
 
+```mermaid
+flowchart TD
+    subgraph UI ["🖥️ Web Operations Console (Next.js 15)"]
+        A["Dashboard & Job Controller"]
+        B["Account Manager & Diagnostics"]
+    end
+
+    subgraph AI ["🧠 Gemini Multimodal Vision AI"]
+        C["Post Image / Screenshot Analysis"]
+        D["Context-Aware Unique Comment Generation"]
+    end
+
+    subgraph Queue ["⚡ Distributed Orchestration"]
+        Q["BullMQ Redis Queue & Human Pacing"]
+    end
+
+    subgraph Engines ["🎯 Dual Execution Engines"]
+        subgraph EngineB ["💎 Engine B: Official Meta Graph API"]
+            E["Instagram OAuth 2.0 Flow"]
+            F["AES-256-GCM Encrypted Tokens"]
+            G["REST Comment Moderation & Media Publishing"]
+            H["🛡️ 100% Policy Compliant · Zero Ban Risk"]
+        end
+
+        subgraph EngineA ["📱 Engine A: Playwright Stealth Browser"]
+            I["Per-Account Dedicated Proxies (HTTP/SOCKS5)"]
+            J["Mobile Touch Emulation (Pixel 7 / iPhone)"]
+            K["WebRTC Leak Shield & Anti-Detection"]
+            L["🛡️ Stochastic Delays & Circuit Breaker"]
+        end
+    end
+
+    A --> C
+    C --> D
+    D --> Q
+    Q --> EngineB
+    Q --> EngineA
+    B --> M[("PostgreSQL Database")]
 ```
-                                  ┌──────────────────────────────┐
-                                  │   Instara Crew Web Console   │
-                                  │   (Next.js 15 + Prisma DB)   │
-                                  └──────────────┬───────────────┘
-                                                 │
-                                                 ▼
-                                  ┌──────────────────────────────┐
-                                  │   Gemini Vision Composer     │
-                                  │   (Photo Context & Prompts)  │
-                                  └──────────────┬───────────────┘
-                                                 │
-                        ┌────────────────────────┴────────────────────────┐
-                        │                                                 │
-                        ▼                                                 ▼
-          ┌───────────────────────────┐                     ┌───────────────────────────┐
-          │  💎 Engine B: Meta API    │                     │  📱 Engine A: Browser Hub │
-          │  (Official & Zero Risk)   │                     │  (Stealth & Proxy)        │
-          ├───────────────────────────┤                     ├───────────────────────────┤
-          │ • Instagram OAuth Login   │                     │ • Per-Account Proxies     │
-          │ • 60-day Encrypted Tokens │                     │ • Pixel 7 / iPhone Touch  │
-          │ • REST API Comment Reply  │                     │ • WebRTC Leak Shield      │
-          │ • Native Media Publish    │                     │ • Stochastic Human Pacing │
-          │ • 100% Policy Compliant   │                     │ • Circuit-Breaker Stops   │
-          └───────────────────────────┘                     └───────────────────────────┘
-```
 
-### Engine Comparison
+### Engine Comparison Matrix
 
 | Feature | 💎 Engine B (Meta Graph API) | 📱 Engine A (Playwright Stealth Hub) |
 |---|---|---|
@@ -74,7 +87,7 @@ Instara Crew provides a unified operations dashboard backed by two dedicated exe
 
 ---
 
-## ✦ Key Features
+## ⚡ Key Features
 
 ### 💎 Engine B — Official Meta Graph API
 * **One-Click OAuth 2.0 Flow**: Authorize Creator/Business accounts officially through Meta Login.
@@ -89,7 +102,7 @@ Instara Crew provides a unified operations dashboard backed by two dedicated exe
 * **WebRTC Leak Defense**: Chromium launch flags enforce non-proxied UDP blocking to keep operator IPs anonymous.
 * **Responsive Mobile Handlers**: Automated interaction for collapsed mobile comment trays and app-install popups.
 
-### ✦ Gemini Vision AI Composer
+### 🧠 Gemini Vision AI Composer
 * **Multimodal Post Analysis**: Gemini inspects post images to infer aesthetic context, subject matter, and mood.
 * **Semantic Diversity**: Generates up to 100 uniquely worded comments per batch across customizable tones (*Natural, Casual, Enthusiastic, Elegant, Minimal*).
 * **Database-Level Uniqueness**: Strict database constraints (`@@unique([jobId, commentText])`) ensure no duplicate comments are ever sent.
@@ -102,7 +115,7 @@ Instara Crew provides a unified operations dashboard backed by two dedicated exe
 
 ---
 
-## ✦ Quickstart
+## 🚀 Quickstart
 
 ### 1. Prerequisites
 - **Node.js**: 20+ LTS
@@ -154,7 +167,7 @@ Open **http://localhost:3000** in your browser.
 
 ---
 
-## ✦ Testing
+## 🧪 Testing & Verification
 
 Run the automated test suite anytime:
 
@@ -202,7 +215,7 @@ It is the sole and exclusive responsibility of the end user to:
 
 ---
 
-## ✦ Author & Acknowledgements
+## 👥 Author & Acknowledgements
 
 * **Creator & Lead Architect**: [LUC4N3X](https://github.com/LUC4N3X)
 
