@@ -1,6 +1,6 @@
-<div align="center">
+﻿<div align="center">
 
-<img src="docs/assets/instara-crew-banner.png" alt="Instara Crew banner" width="100%" />
+<img src="docs/assets/logo.png" alt="Instara Crew Logo" width="380" style="max-width: 100%;" />
 
 <br />
 
