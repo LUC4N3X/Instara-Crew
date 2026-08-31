@@ -6,199 +6,183 @@
 
 # ✦ Instara Crew
 
-> [!WARNING]
-> 🚧 **ACTIVE DEVELOPMENT — EXPERIMENTAL SOFTWARE**  
-> Instara Crew is currently under active development. Features, APIs, selectors, integrations and runtime behavior may change, break or be removed without notice. **Do not treat the current version as production-ready.**
+🚧 **Active development · Experimental software**
 
-### A self-hosted Instagram workflow console for multi-account operations, AI-assisted content preparation and controlled job execution.
+### One control center for multi-account Instagram workflows, AI-assisted comment preparation and operator-controlled execution.
 
-Built with **Next.js**, **Playwright**, **Gemini**, **PostgreSQL**, **Redis** and **BullMQ** — designed around visibility, isolated sessions, dry-run workflows and explicit operator control.
+**Self-hosted · Multi-account · Gemini-assisted · Dry-run first**
 
 <br />
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-2f81f7?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Active_Development-orange?style=for-the-badge)](#-development-status)
-[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Playwright](https://img.shields.io/badge/Playwright-Browser_Automation-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
-[![Gemini](https://img.shields.io/badge/Gemini-Vertex_AI-8E75B2?style=for-the-badge&logo=googlecloud&logoColor=white)](https://cloud.google.com/vertex-ai)
+[![Self Hosted](https://img.shields.io/badge/Self--Hosted-Yes-2ea44f?style=for-the-badge)](#-quick-start)
+[![GPL v3](https://img.shields.io/badge/GPL-v3-blue?style=for-the-badge)](LICENSE)
 
 <br />
 
-[🌐 Overview](#-overview) · [✨ Features](#-features) · [🧩 Architecture](#-architecture) · [🚀 Quick Start](#-quick-start) · [🔧 Configuration](#-configuration) · [🧪 Testing](#-testing) · [⚖️ Legal](#️-legal--responsible-use)
+[🎯 What it does](#-what-instara-crew-does) · [🔄 How it works](#-how-it-works) · [✨ Features](#-what-you-can-do) · [🚀 Quick Start](#-quick-start) · [⚖️ Legal](#️-legal--responsible-use)
 
 </div>
 
 ---
 
-## 🌐 Overview
+## 🎯 What Instara Crew Does
 
-**Instara Crew** is an experimental, self-hosted operations console designed to manage Instagram-oriented workflows from one place.
+**Instara Crew is a self-hosted workspace designed to coordinate Instagram workflows across multiple authorized accounts from one dashboard.**
 
-It brings together:
+The idea is simple: instead of opening profiles one by one, preparing every comment separately and losing track of what has already been done, Instara Crew keeps the whole operation together.
 
-- 🖥️ a web dashboard for accounts, jobs and execution status;
-- 📱 persistent browser sessions managed through Playwright;
-- 🌍 optional per-account proxy configuration;
-- 💎 an official Meta Graph API integration path for supported account types and actions;
-- 🧠 Gemini-powered multimodal analysis and text generation;
-- 🗄️ PostgreSQL persistence through Prisma;
-- ⚡ Redis + BullMQ workers for queued background execution;
-- 🛡️ operator guardrails such as dry-run, account limits, pause/cancel controls and execution logs.
+From the same console you can manage accounts, create a job for a target post, prepare different comments with Gemini, distribute them across available profiles, start the run and follow what happens item by item.
+
+### In practice, Instara Crew can:
+
+- 👥 manage multiple Instagram profiles from one place;
+- 🔐 keep an isolated persistent browser session for each account;
+- 🌍 attach optional proxy configuration to individual profiles;
+- 📱 use configurable mobile browser profiles for browser-based sessions;
+- 💎 use the official Meta Graph API where the requested workflow is supported;
+- 🧠 analyze supplied visual and contextual information with Gemini;
+- ✍️ prepare multiple context-aware comments with different wording;
+- 🎚️ use tone, quantity and extra context when preparing a job;
+- 🔀 distribute prepared items across active accounts;
+- ⚡ process jobs through a background queue;
+- 🧪 run browser workflows in **Dry Run** before final submission;
+- ⏸️ pause or cancel an active job;
+- 📋 track item status, attempts, failures and execution logs;
+- 🛡️ apply configurable per-account activity limits.
 
 > [!NOTE]
-> **One console. Multiple accounts. Full visibility.**  
-> The project is built to keep account state, generated content, jobs and execution logs observable from a single workspace.
+> **Prepare once. Coordinate from one place. Keep the operator in control.**
 
 ---
 
-## ✨ Features
+## 🔄 How It Works
 
-### 👥 Multi-account workspace
+### 1. 👤 Add the accounts
 
-Manage multiple profiles while keeping account-specific state separated.
+Accounts are added to the Instara Crew workspace and keep their own state instead of sharing one global browser session.
 
-- persistent browser profile per account;
-- account labels and status tracking;
-- optional proxy assignment per profile;
-- configurable mobile/device profile;
-- login-required and paused states;
-- last-activity tracking.
+For browser-based accounts, Instara Crew can maintain a persistent profile so the login session survives between jobs. Each account can also have its own proxy, device configuration, activity limits and status.
 
-### 🔀 Dual integration model
+For eligible Creator / Business accounts, supported operations can instead use the official Meta OAuth / Graph API path.
 
-Instara Crew supports two execution paths depending on the account and workflow.
+### 2. 🎯 Create a job
 
-| Mode | Best suited for | Authentication | Notes |
-|---|---|---|---|
-| 💎 **Meta Graph API** | Supported Creator / Business workflows | OAuth 2.0 | Uses official Meta endpoints and granted platform permissions |
-| 📱 **Browser Session** | Interactive browser workflows | Persistent local session | Uses Playwright with isolated account profiles |
+Create a job for the Instagram post you want to work with.
 
-These modes are intentionally separated: official API workflows and browser-based workflows do not have the same capabilities, limitations, risks or platform requirements.
+You define the target, the desired quantity, the tone and any additional context that should guide preparation.
 
-### 🧠 Gemini-assisted preparation
+### 3. 🧠 Gemini prepares the batch
 
-Gemini can analyze visual content and prepare context-aware text before a job is executed.
+Gemini can use supplied visual and contextual information to understand the post and prepare multiple comment candidates that fit the requested tone.
 
-- multimodal image/context analysis;
-- selectable tone and additional context;
-- batch generation;
-- unique comment storage at database level;
-- configurable Gemini model through environment variables;
-- Google Vertex AI authentication through Application Default Credentials — no hard-coded Gemini API key required.
+Each generated comment becomes its own job item. Instara Crew also enforces uniqueness inside the same job so the batch stays organized and avoids identical entries.
 
-### ⚡ Job orchestration
+### 4. 🔀 Instara Crew assigns the items
 
-Jobs are persisted and processed by background workers instead of being tied to a single browser request.
+The preparation worker checks the accounts currently available and distributes job items according to their status and configured per-run limits.
 
-- preparation and execution queues;
-- per-item execution state;
-- assignment across active accounts;
-- retry/error visibility;
-- pause and cancel controls;
-- detailed job logs;
-- Redis-backed BullMQ processing.
+Every item remains individually traceable to its assigned account and execution state.
 
-### 🛡️ Operational guardrails
+### 5. ⚡ Start the run
 
-Real actions remain under explicit operator control.
+Once the job is ready, background workers process the queued items.
 
-- **Dry Run enabled by default**;
-- configurable hourly and daily account limits;
-- minimum gap between actions;
-- configurable active hours;
-- per-run account limits;
-- automatic account pause when blocking conditions are detected;
-- human-readable execution logs.
+Depending on the configured account and supported workflow, execution can use either the official Meta integration or the account's persistent browser session.
+
+### 6. 👀 Follow everything from the dashboard
+
+The job does not disappear after you press start.
+
+Instara Crew keeps updating its state so you can see which items are ready, running, completed, skipped or failed, together with attempts and useful error information.
+
+You can also pause or cancel the run when needed.
 
 ---
 
-## 🧩 Architecture
+## ✨ What You Can Do
 
-```mermaid
-flowchart LR
-    U[👤 Operator] --> W[🖥️ Next.js Console]
+### 👥 Multi-account control
 
-    W --> API[Application API]
-    API --> DB[(PostgreSQL)]
-    API --> Q[Redis / BullMQ]
-    API --> AI[🧠 Gemini / Vertex AI]
+Keep several profiles inside one workspace while maintaining separate browser state and account-specific configuration.
 
-    Q --> WORKER[⚡ Background Worker]
+This makes it easier to understand **which account is available, which account received an item and what happened during execution**.
 
-    WORKER --> BROWSER[📱 Playwright Sessions]
-    WORKER --> META[💎 Meta Graph API]
+### 🧠 Generate different comments with Gemini
 
-    BROWSER --> IG[Instagram]
-    META --> IG
+Instead of preparing one generic message and copying it repeatedly, Instara Crew can create a batch of different candidate comments based on the context supplied for the post.
 
-    WORKER --> DB
-```
+The operator controls the requested tone, quantity and additional context before generation.
 
-### 🧱 Core stack
+### 📱 Keep login sessions persistent
 
-| Layer | Technology | Responsibility |
-|---|---|---|
-| 🖥️ Web application | **Next.js 16 + React 19** | Dashboard, API routes and operator controls |
-| 🔷 Language | **TypeScript** | Strictly typed application code |
-| 📱 Browser runtime | **Playwright** | Persistent browser sessions and device emulation |
-| 🧠 AI | **Google Gemini / Vertex AI** | Multimodal analysis and text generation |
-| 🗄️ Database | **PostgreSQL + Prisma** | Accounts, jobs, items and logs |
-| ⚡ Queue | **BullMQ + Redis** | Background preparation and execution |
-| ✅ Validation | **Zod** | Runtime request/config validation |
+Browser-based accounts use isolated persistent Playwright profiles.
+
+The goal is to allow an authenticated local session to be reused on later jobs rather than starting from a blank browser every time.
+
+### 🌍 Configure profiles independently
+
+Each account can keep its own operational configuration, including optional proxy routing, device/browser settings and account-specific limits.
+
+### 💎 Use the official Meta path when available
+
+Instara Crew includes a separate Meta Graph API integration for supported account types and actions.
+
+Official API workflows remain separate from browser workflows because they have different permissions, capabilities and platform requirements.
+
+### 🧪 Verify with Dry Run
+
+**Dry Run is enabled by default.**
+
+For browser workflows, it allows the project to reach the interaction stage and prepare/type the content without performing the final submission.
+
+This gives the operator a way to verify the account, target and workflow before enabling a real action.
+
+### ⚡ Queue the work
+
+Preparation and execution are handled as tracked background jobs through Redis and BullMQ.
+
+The dashboard remains focused on status and control while workers process individual items and write their results back to the project state.
+
+### 🛡️ Control the pace
+
+Instara Crew includes configurable controls such as hourly limits, daily limits, minimum gaps between actions, active-hour windows, concurrency and per-run limits.
+
+These are operational guardrails designed to reduce accidental over-execution. **They do not guarantee platform acceptance or account safety.**
+
+### 📋 Know what happened
+
+Each job item has its own state, attempts, timestamps and error information.
+
+The project is designed to make failures visible instead of hiding everything behind a generic success/failure message.
 
 ---
 
 ## 🚀 Quick Start
 
-### Requirements
-
-Before starting, install:
-
-- **Node.js 20+**
-- **npm**
-- **Docker Desktop** or Docker Engine with Compose
-- **Google Cloud CLI** if you want to use Gemini through Vertex AI
-
-### 1. Clone the repository
+You need **Node.js 20+**, **Docker**, **npm** and the **Google Cloud CLI** if you want to use Gemini through Vertex AI.
 
 ```bash
 git clone https://github.com/LUC4N3X/Instara-Crew.git
 cd Instara-Crew
-```
-
-### 2. Install dependencies
-
-```bash
 npm install
 npx playwright install chromium
-```
-
-### 3. Start PostgreSQL and Redis
-
-```bash
 docker compose up -d
 ```
 
-### 4. Create your local environment file
-
-**Windows PowerShell**
+Create the local environment file:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-**Linux / macOS**
+On Linux / macOS:
 
 ```bash
 cp .env.example .env
 ```
 
-### 5. Generate the session encryption key
-
-Generate a 256-bit key and place it in `SESSION_ENCRYPTION_KEY_BASE64`.
-
-**PowerShell**
+Generate a 256-bit session encryption key on PowerShell and place the result in `SESSION_ENCRYPTION_KEY_BASE64`:
 
 ```powershell
 $key = New-Object byte[] 32
@@ -206,12 +190,7 @@ $key = New-Object byte[] 32
 [Convert]::ToBase64String($key)
 ```
 
-> [!CAUTION]
-> 🔐 **Never commit your real `.env`, access tokens, credentials, cookies, browser profiles, proxy credentials or encryption key to Git.**
-
-### 6. Configure Gemini on Vertex AI
-
-Authenticate locally:
+Authenticate Google Cloud for Gemini:
 
 ```bash
 gcloud auth login
@@ -220,141 +199,28 @@ gcloud config set project YOUR_PROJECT_ID
 gcloud services enable aiplatform.googleapis.com
 ```
 
-Then set at least:
-
-```env
-GOOGLE_CLOUD_PROJECT=your-project-id
-GOOGLE_CLOUD_LOCATION=global
-GEMINI_MODEL=gemini-2.5-flash
-```
-
-### 7. Prepare the database
+Then prepare the database and start Instara Crew:
 
 ```bash
 npm run prisma:generate
 npm run prisma:migrate
-```
-
-### 8. Start Instara Crew
-
-```bash
 npm run dev:all
 ```
 
-Open:
-
-```text
-http://localhost:3000
-```
+Open **http://localhost:3000**.
 
 ---
 
 ## 🔧 Configuration
 
-The repository includes a documented [`.env.example`](.env.example) with development defaults.
+Everything is centralized in [`.env.example`](.env.example).
 
-### 🗄️ Core services
+You mainly configure **PostgreSQL / Redis**, the session encryption key, optional **Meta** credentials, **Google Cloud / Gemini**, browser profile settings and the execution limits you want to use.
 
-| Variable | Purpose |
-|---|---|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `REDIS_URL` | Redis connection string |
-| `SESSION_ENCRYPTION_KEY_BASE64` | 256-bit key used for encrypted sensitive data |
+For first setup, copy `.env.example` to `.env` and change only what you actually need.
 
-### 💎 Meta integration
-
-| Variable | Purpose |
-|---|---|
-| `META_APP_ID` | Meta application ID |
-| `META_APP_SECRET` | Meta application secret |
-| `META_REDIRECT_URI` | OAuth callback URL |
-
-### 🧠 Gemini / Vertex AI
-
-| Variable | Purpose |
-|---|---|
-| `GOOGLE_CLOUD_PROJECT` | Google Cloud project ID |
-| `GOOGLE_CLOUD_LOCATION` | Vertex AI region/location |
-| `GEMINI_MODEL` | Gemini model used by the composer |
-
-### 📱 Browser sessions
-
-| Variable | Purpose |
-|---|---|
-| `BROWSER_PROFILE_ROOT` | Directory containing persistent account profiles |
-| `BROWSER_HEADLESS` | Run browser sessions with or without visible UI |
-| `BROWSER_TIMEZONE` | Default browser timezone |
-| `BROWSER_CHANNEL` | Optional installed browser channel |
-
-### 🎛️ Execution controls
-
-| Variable | Purpose |
-|---|---|
-| `DRY_RUN` | Prepare/type actions without final submission |
-| `RATE_LIMITS` | Enable or disable configured operational limits |
-| `POST_ACCOUNT_CONCURRENCY` | Number of account workers allowed in parallel |
-| `ACCOUNT_MAX_PER_HOUR` | Per-account hourly action limit |
-| `ACCOUNT_MAX_PER_DAY` | Per-account daily action limit |
-| `ACCOUNT_MIN_GAP_SEC` | Minimum time between actions for one account |
-| `ACTIVE_HOUR_FROM` / `ACTIVE_HOUR_TO` | Allowed local execution window |
-
-For the complete list and defaults, see [`.env.example`](.env.example).
-
----
-
-## ⌨️ Available Commands
-
-| Command | Description |
-|---|---|
-| `npm run dev` | Start the Next.js development server |
-| `npm run worker` | Start the BullMQ worker |
-| `npm run dev:all` | Run web application and worker together |
-| `npm run build` | Create a production Next.js build |
-| `npm run start` | Start the production web server |
-| `npm run prisma:generate` | Generate the Prisma client |
-| `npm run prisma:migrate` | Run development database migrations |
-| `npm run prisma:studio` | Open Prisma Studio |
-| `npm run typecheck` | Run TypeScript validation |
-| `npm run test:guardrails` | Run operational guardrail checks |
-| `npm run test:selftest` | Run project self-tests |
-| `npm test` | Run the complete verification chain |
-
----
-
-## 🧪 Testing
-
-Run the complete verification chain with:
-
-```bash
-npm test
-```
-
-It currently includes:
-
-1. TypeScript type checking;
-2. guardrail verification;
-3. project self-tests for core runtime behavior.
-
-For a faster static check:
-
-```bash
-npm run typecheck
-```
-
----
-
-## 🔐 Security Notes
-
-- Keep `.env` and secrets out of version control.
-- Treat browser profile folders as sensitive local data.
-- Never publish OAuth tokens, cookies, session data, proxy credentials or encryption keys.
-- Use separate development credentials when testing integrations.
-- Keep `DRY_RUN=true` until you have independently verified the target workflow and account configuration.
-- Keep dependencies, browsers and runtime components updated.
-- Review third-party platform requirements before enabling real external actions.
-
-> [!IMPORTANT]
-> No browser automation layer should be considered **undetectable, ban-proof, restriction-proof or risk-free**. Platform behavior, policies, security mechanisms and interfaces evolve independently from this project.
+> [!CAUTION]
+> 🔐 Never commit your real `.env`, OAuth tokens, cookies, browser profiles, proxy credentials or encryption keys.
 
 ---
 
@@ -362,15 +228,9 @@ npm run typecheck
 
 **Instara Crew is experimental and under active development.**
 
-The current project version is in the `0.1.x` development line. APIs, selectors, database models, UI behavior and integrations may evolve quickly.
+The project is currently in its early `0.1.x` development line. The dashboard, selectors, integrations and workflow behavior can change significantly while the project is refined.
 
-For testing, prefer:
-
-- local development environments;
-- accounts and data you own or are expressly authorized to use;
-- dry-run execution first;
-- conservative operational limits;
-- explicit verification before enabling real actions.
+Current development is focused on making account management, job preparation, execution visibility and operator control more reliable and polished.
 
 No compatibility, availability or stability guarantee is made for development builds.
 
@@ -379,60 +239,47 @@ No compatibility, availability or stability guarantee is made for development bu
 ## ⚖️ Legal & Responsible Use
 
 > [!IMPORTANT]
-> **Please read this section before using the software.** Instara Crew is provided as open-source software and depends on third-party platforms and services that are outside the control of the project author or contributors.
+> **Please read this section before using the software.** Instara Crew is an independent open-source project that can interact with third-party platforms and services outside the control of its author and contributors.
 
 ### 🚫 No affiliation or endorsement
 
-**Instara Crew is an independent project. It is not affiliated with, endorsed by, sponsored by, approved by, maintained by or officially connected with Meta Platforms, Inc., Instagram, Google, Google Cloud, Microsoft or any other third-party platform or service referenced by the project.**
+**Instara Crew is not affiliated with, endorsed by, sponsored by, approved by, maintained by or officially connected with Meta Platforms, Inc., Instagram, Google, Google Cloud, Microsoft or any other third-party platform or service referenced by the project.**
 
-Instagram®, Meta® and any other third-party names, trademarks, service marks and logos remain the property of their respective owners. Their appearance in this repository is solely for identification, interoperability and descriptive purposes and does not imply any relationship or endorsement.
+Instagram®, Meta® and all other third-party names, trademarks, service marks and logos remain the property of their respective owners. References in this repository are made solely for identification, interoperability and descriptive purposes and do not imply endorsement or partnership.
 
 ### 👤 User responsibility
 
-Each user is solely responsible for how they configure, deploy and use the software and for determining whether a particular use is lawful and permitted.
+Each user is solely responsible for how the software is configured, deployed and used and for determining whether a particular use is lawful and permitted.
 
-You are responsible for, among other things:
+Users are responsible for complying with applicable laws, platform terms, developer policies and technical restrictions; using only accounts, credentials, systems, content and data they own or are expressly authorized to access; obtaining any required permissions or consents; protecting credentials and personal data; and reviewing generated content and automated actions before use where appropriate.
 
-- complying with all applicable laws and regulations in your jurisdiction;
-- complying with the terms, policies, developer rules and technical restrictions of any third-party platform or service you choose to access;
-- using only accounts, credentials, content, systems and data that you own or are authorized to access;
-- obtaining any permissions, notices or consents required for your activity;
-- protecting credentials, tokens, cookies, personal data, proxy credentials and other sensitive information;
-- independently reviewing generated content and automated actions before use where appropriate.
-
-The existence of a feature in this repository does **not** represent a statement that the feature is permitted by any third-party service, suitable for a particular purpose or lawful in every jurisdiction.
+**The presence of a capability in this repository does not mean that a third-party platform permits that capability, that it is suitable for a particular use, or that it is lawful in every jurisdiction.**
 
 ### ⚠️ Platform and account risk
 
-Third-party platforms may change APIs, interfaces, authentication flows, policies, rate limits, detection mechanisms or enforcement practices at any time.
+Third-party platforms may change APIs, interfaces, authentication flows, policies, rate limits, security mechanisms or enforcement practices at any time.
 
-The author and contributors do not guarantee that:
+The author and contributors do not guarantee that any integration will continue to function, that an action will be accepted by a third-party platform, that an account will avoid warnings or restrictions, or that browser-based workflows will remain compatible with external services.
 
-- any integration or workflow will continue to function;
-- any action will be accepted by a third-party platform;
-- an account will avoid warnings, challenges, restrictions, suspensions or termination;
-- browser automation will remain compatible with a platform;
-- generated content will be accurate, appropriate or accepted by a platform or audience.
-
-Use of the software and any interaction with third-party platforms is therefore undertaken **at the user's own risk**.
+Use of the software and interaction with third-party platforms are undertaken **at the user's own risk**.
 
 ### 🧠 AI-generated content
 
-AI-generated or AI-assisted output may be incomplete, inaccurate, repetitive, inappropriate or otherwise unsuitable for a specific context. The project author and contributors do not review or approve user-generated jobs or outputs and make no representation regarding their accuracy, legality or suitability.
+AI-generated or AI-assisted output may be incomplete, inaccurate, repetitive, inappropriate or otherwise unsuitable for a specific context.
 
-The user remains responsible for reviewing and deciding whether to use any generated output.
+The project author and contributors do not review or approve user-created jobs or generated outputs. The user remains responsible for reviewing and deciding whether any generated content should be used.
 
 ### 🌐 Third-party services
 
-Instara Crew can interact with or depend on external software, services, APIs and infrastructure. Availability, pricing, policies, data handling, behavior and security of those third parties are outside the control of this project.
+Availability, pricing, policies, data handling, behavior and security of external platforms, APIs, cloud providers, proxy services and other dependencies are outside the control of this project.
 
-The project author and contributors are not responsible for outages, policy changes, service changes, data practices, account actions, billing, losses or other consequences attributable to third-party products or services.
+The author and contributors are not responsible for outages, policy changes, service changes, account actions, billing, losses or other consequences attributable to third-party products or services.
 
 ### 🛡️ No warranty
 
 **TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, THE SOFTWARE IS PROVIDED “AS IS” AND “AS AVAILABLE”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.**
 
-No warranty or representation is made regarding reliability, availability, security, accuracy, fitness for a particular purpose, merchantability, non-infringement, uninterrupted operation, compatibility with third-party services or the results obtained from use of the software.
+No warranty or representation is made regarding reliability, availability, security, accuracy, fitness for a particular purpose, merchantability, non-infringement, uninterrupted operation, compatibility with third-party services or results obtained from use of the software.
 
 ### ⚖️ Limitation of liability
 
@@ -442,11 +289,7 @@ This includes, without limitation, loss of data, credentials, accounts, access, 
 
 Nothing in this notice excludes or limits liability where such exclusion or limitation is prohibited by applicable law.
 
-### 📜 GPL notice
-
-Instara Crew is distributed under the **GNU General Public License v3.0 or later**. The complete license terms are contained in [`LICENSE`](LICENSE).
-
-The GPL itself includes a disclaimer of warranty and limitation of liability. If anything in this README conflicts with the applicable license, **the license text controls**. This README does not add restrictions to the rights granted by the GPL.
+Instara Crew is distributed under the **GNU General Public License v3.0 or later**. The complete license terms are contained in [`LICENSE`](LICENSE). If anything in this README conflicts with the applicable license, **the license text controls**.
 
 ### 🧑‍⚖️ Not legal advice
 
@@ -458,20 +301,12 @@ This repository and its documentation provide general project information only a
 
 Created and maintained by **[LUC4N3X](https://github.com/LUC4N3X)**.
 
-If Instara Crew is useful to you, consider giving the repository a ⭐ — it helps people discover the project and makes development easier to follow.
-
----
-
-## 📜 License
-
-Released under the **GNU General Public License v3.0 or later**.
-
-See [`LICENSE`](LICENSE) for the complete license text.
+If Instara Crew is useful to you, consider giving the repository a ⭐.
 
 <div align="center">
 
 <br />
 
-**Instara Crew** · Self-hosted. Observable. Operator-controlled.
+**Instara Crew** · One workspace. Multiple accounts. Full control.
 
 </div>
