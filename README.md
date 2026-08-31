@@ -7,7 +7,7 @@
 **A clean-room Instagram operations console and multi-account automation suite.**
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="MIT License" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-blue.svg?style=flat-square" alt="GPL-3.0 License" /></a>
   <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-15+-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" /></a>
   <a href="https://developers.facebook.com/docs/instagram-platform"><img src="https://img.shields.io/badge/Meta_Graph_API-OAuth_2.0-0081FB?style=flat-square&logo=meta&logoColor=white" alt="Meta Graph API" /></a>
   <a href="https://playwright.dev"><img src="https://img.shields.io/badge/Playwright-Stealth_%26_Mobile-45ba4b?style=flat-square&logo=playwright&logoColor=white" alt="Playwright" /></a>
@@ -155,5 +155,5 @@ It is the sole responsibility of the end user to comply with [Instagram Terms of
 ---
 
 ## License
-
-Released under the **MIT License**. See [`LICENSE`](LICENSE) for details.
+ 
+Released under the **GNU General Public License v3.0 (GPL-3.0)**. See [`LICENSE`](LICENSE) for details.
