@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccountStatus {
+  ACTIVE
+  PAUSED
+  NEEDS_LOGIN
+}
+
+enum JobStatus {
+  DRAFT
+  PREPARING
+  READY
+  RUNNING
+  PAUSED
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+enum ItemStatus {
+  READY
+  OPENED
+  QUEUED
+  POSTING
+  COMPLETED
+  SKIPPED
+  FAILED
+}
+
+model Account {
+  id          String        @id @default(cuid())
+  username    String        @unique
+  label       String?
+  profileKey      String        @unique
+  status          AccountStatus @default(NEEDS_LOGIN)
+  authType        String        @default("BROWSER_SESSION")
+  igUserId        String?
+  encryptedAccessToken String?
+  tokenExpiresAt  DateTime?
+  accountType     String?
+  proxyUrl        String?
+  devicePreset    String        @default("PIXEL_7")
+  customUserAgent String?
+  viewportWidth   Int?
+  viewportHeight  Int?
+  deviceScaleFactor Float?
+  isMobile        Boolean       @default(true)
+  hasTouch        Boolean       @default(true)
+  minDelaySec     Int           @default(20)
+  maxDelaySec Int           @default(60)
+  cooldownSec Int           @default(120)
+  maxPerRun   Int           @default(0)
+  lastPostAt  DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  items       JobItem[]
+}
+
+model Job {
+  id          String     @id @default(cuid())
+  clientName  String
+  targetUrl   String
+  imageName   String?
+  quantity    Int
+  tone        String     @default("naturale")
+  context     String?
+  status      JobStatus  @default(DRAFT)
+  dryRun      Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  items       JobItem[]
+  logs        JobLog[]
+}
+
+model JobItem {
+  id          String     @id @default(cuid())
+  jobId       String
+  accountId   String?
+  position    Int
+  commentText String
+  status      ItemStatus @default(READY)
+  attempts    Int        @default(0)
+  lastError   String?
+  openedAt    DateTime?
+  postedAt    DateTime?
+  completedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  job         Job        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  account     Account?   @relation(fields: [accountId], references: [id], onDelete: SetNull)
+
+  @@unique([jobId, position])
+  @@unique([jobId, commentText])
+}
+
+model JobLog {
+  id        String   @id @default(cuid())
+  jobId     String
+  level     String
+  message   String
+  createdAt DateTime @default(now())
+
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}

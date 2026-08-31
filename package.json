@@ -1,0 +1,39 @@
+{
+  "name": "instara-crew",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "worker": "tsx src/worker.ts",
+    "dev:all": "concurrently -n web,worker -c auto \"npm run dev\" \"npm run worker\"",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "typecheck": "tsc --noEmit",
+    "test:guardrails": "tsx scripts/guardrails.ts",
+    "test:selftest": "tsx scripts/selftest.ts",
+    "test": "npm run typecheck && npm run test:guardrails && npm run test:selftest"
+  },
+  "dependencies": {
+    "@google/genai": "^2.19.0",
+    "@prisma/client": "^6.19.3",
+    "bullmq": "^6.3.2",
+    "ioredis": "^6.0.0",
+    "next": "^16.3.3",
+    "playwright": "^1.62.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "concurrently": "^10.0.5",
+    "prisma": "^6.19.3",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3"
+  }
+}
