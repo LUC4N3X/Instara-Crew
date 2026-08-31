@@ -205,7 +205,24 @@ It is the sole and exclusive responsibility of the end user to:
 ## ✦ Author & Acknowledgements
 
 * **Creator & Lead Architect**: [LUC4N3X](https://github.com/LUC4N3X)
-* **Core Stack**: [Next.js](https://nextjs.org/), [Playwright](https://playwright.dev/), [Meta Graph API](https://developers.facebook.com/docs/instagram-platform), [Google Gemini Multimodal AI](https://cloud.google.com/vertex-ai), [Prisma ORM](https://www.prisma.io/), and [BullMQ](https://bullmq.io/).
+
+### Open-Source Libraries & Dependencies
+
+Instara Crew is made possible thanks to the following open-source projects and developer communities:
+
+| Project | Author / Maintainer | Role in Instara Crew |
+|---|---|---|
+| **[Next.js](https://nextjs.org/)** | [Vercel](https://vercel.com/) | React full-stack application framework & API routing |
+| **[Playwright](https://playwright.dev/)** | [Microsoft](https://github.com/microsoft/playwright) | Browser automation, stealth fingerprinting & mobile emulation |
+| **[Google GenAI (`@google/genai`)](https://cloud.google.com/vertex-ai)** | [Google DeepMind / Google Cloud](https://cloud.google.com/) | Gemini multimodal vision analysis and unique comment generation |
+| **[Prisma ORM](https://www.prisma.io/)** | [Prisma Data](https://github.com/prisma/prisma) | Type-safe PostgreSQL database client and schema migrations |
+| **[BullMQ](https://bullmq.io/)** | [Taskforces.io](https://github.com/taskforces/bullmq) | Distributed job queue, background worker scheduling, and pacing |
+| **[ioredis](https://github.com/redis/ioredis)** | [Zihua Li & Contributors](https://github.com/redis/ioredis) | High-performance Redis client for cache and queue storage |
+| **[Zod](https://zod.dev/)** | [Colin McDonnell](https://github.com/colinhacks/zod) | TypeScript-first runtime schema validation for API routes |
+| **[React](https://react.dev/)** | [Meta & Community](https://github.com/facebook/react) | Component-driven user interface and real-time dashboard UI |
+| **[TypeScript](https://www.typescriptlang.org/)** | [Microsoft](https://github.com/microsoft/TypeScript) | Strict static type checking across the entire codebase |
+| **[tsx](https://github.com/privatenumber/tsx)** | [Hiroki Osame](https://github.com/privatenumber) | Fast TypeScript execution engine for workers and test scripts |
+| **[Concurrently](https://github.com/open-cli-tools/concurrently)** | [Kimmo Brunfeldt](https://github.com/open-cli-tools) | Multi-process development runner for Next.js web and worker |
 
 ---
 
