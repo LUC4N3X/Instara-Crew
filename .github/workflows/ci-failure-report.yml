@@ -1,0 +1,88 @@
+name: CI Failure Report
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  report:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion != 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Post or update PR failure report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          PR_NUMBER="$(gh api "repos/$REPO/actions/runs/$RUN_ID" --jq '.pull_requests[0].number // empty')"
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No pull request associated with this CI run."
+            exit 0
+          fi
+
+          JOBS_JSON="$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100")"
+          MARKER='<!-- instara-ci-failure-report -->'
+
+          {
+            echo "$MARKER"
+            echo "## ❌ CI needs attention"
+            echo
+            echo "The latest **CI** run finished with status **$CONCLUSION**."
+            echo
+            echo "### Failed steps"
+            echo
+          } > report.md
+
+          FOUND=0
+          while IFS=$'\t' read -r JOB_ID JOB_NAME JOB_CONCLUSION; do
+            [ -z "$JOB_ID" ] && continue
+            case "$JOB_CONCLUSION" in
+              failure|cancelled|timed_out|action_required|stale)
+                FOUND=1
+                echo "- **$JOB_NAME** — \`$JOB_CONCLUSION\`" >> report.md
+                printf '%s' "$JOBS_JSON" | jq -r --argjson id "$JOB_ID" '
+                  .jobs[]
+                  | select(.id == $id)
+                  | .steps[]?
+                  | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out")
+                  | "  - " + .name + " — `" + (.conclusion // "unknown") + "`"
+                ' >> report.md
+                ;;
+            esac
+          done < <(printf '%s' "$JOBS_JSON" | jq -r '.jobs[] | [.id, .name, (.conclusion // "unknown")] | @tsv')
+
+          if [ "$FOUND" -eq 0 ]; then
+            echo "- The workflow failed, but GitHub did not return a specific failed step." >> report.md
+          fi
+
+          {
+            echo
+            echo "[Open the failing GitHub Actions run]($RUN_URL)"
+            echo
+            echo "This comment is updated automatically on the next failed CI run."
+          } >> report.md
+
+          COMMENT_ID="$(gh api "repos/$REPO/issues/$PR_NUMBER/comments?per_page=100" --paginate --jq '.[] | select(.body | contains("<!-- instara-ci-failure-report -->")) | .id' | tail -n 1)"
+
+          if [ -n "$COMMENT_ID" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$COMMENT_ID" -F body=@report.md >/dev/null
+          else
+            gh api --method POST "repos/$REPO/issues/$PR_NUMBER/comments" -F body=@report.md >/dev/null
+          fi

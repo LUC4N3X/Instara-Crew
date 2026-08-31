@@ -1,0 +1,85 @@
+name: PR Audit
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Audit changed files and runtime guardrails
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          BASE="origin/${{ github.base_ref }}"
+          FILES="$(git diff --name-only "$BASE...HEAD")"
+          ADDED="$(git diff --unified=0 "$BASE...HEAD" | grep '^+' | grep -v '^+++' || true)"
+
+          {
+            echo "## Instara Crew PR Audit"
+            echo
+            echo "Changed files: **$(printf '%s\n' "$FILES" | sed '/^$/d' | wc -l)**"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          SENSITIVE_RE='^(src/lib/(instagram|android|browser|limits|proxy|security|meta-client)\.ts|src/worker\.ts|src/app/api/auth/|src/app/api/accounts/|prisma/schema\.prisma|\.github/workflows/)'
+          SENSITIVE="$(printf '%s\n' "$FILES" | grep -E "$SENSITIVE_RE" || true)"
+
+          if [ -n "$SENSITIVE" ]; then
+            {
+              echo "### Sensitive areas changed"
+              echo '```text'
+              printf '%s\n' "$SENSITIVE"
+              echo '```'
+              echo
+              echo "Review these files carefully before merging."
+              echo
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No sensitive runtime areas changed." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          BLOCKERS=0
+          check_added() {
+            local pattern="$1"
+            local label="$2"
+            if printf '%s\n' "$ADDED" | grep -Eiq "$pattern"; then
+              echo "::error title=PR audit blocker::$label"
+              echo "- ❌ $label" >> "$GITHUB_STEP_SUMMARY"
+              BLOCKERS=$((BLOCKERS + 1))
+            fi
+          }
+
+          check_added 'RATE_LIMITS[[:space:]]*=[[:space:]]*off' 'Global rate limits are disabled in added code/config.'
+          check_added 'ACCOUNT_MAX_PER_HOUR[[:space:]]*=[[:space:]]*0([^0-9]|$)' 'Hourly account limit is disabled in added defaults.'
+          check_added 'ACCOUNT_MAX_PER_DAY[[:space:]]*=[[:space:]]*0([^0-9]|$)' 'Daily account limit is disabled in added defaults.'
+          check_added 'ACCOUNT_MIN_GAP_SEC[[:space:]]*=[[:space:]]*0([^0-9]|$)' 'Minimum account gap is disabled in added defaults.'
+          check_added 'loginWithPassword|password[^[:space:]]*Login|fill\([^)]*password' 'Password-based Instagram login automation was added.'
+          check_added 'scrapeFollowers|massFollow|massUnfollow' 'Out-of-scope follower automation was added.'
+
+          if [ "$BLOCKERS" -gt 0 ]; then
+            {
+              echo
+              echo "**Result: FAILED — $BLOCKERS blocker(s) found.**"
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          {
+            echo
+            echo "**Result: PASS — no automatic blockers found.**"
+          } >> "$GITHUB_STEP_SUMMARY"

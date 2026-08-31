@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
-import { publishComment } from "@/lib/instagram";
+import { InstagramError } from "@/lib/instagram";
+import { publishCommentForAccount } from "@/lib/publisher";
 import { checkAccountLimits } from "@/lib/limits";
 
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
@@ -14,6 +15,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   if (!item.account) return Response.json({ error: "Nessun account assegnato" }, { status: 409 });
   if (item.account.status !== "ACTIVE") {
     return Response.json({ error: `Account @${item.account.username} non ACTIVE.` }, { status: 409 });
+  }
+  if (item.account.authType !== "BROWSER_SESSION") {
+    return Response.json({ error: "Questo item richiede un account Browser/Android, non Meta OAuth." }, { status: 409 });
   }
 
   let dryRun = item.job.dryRun;
@@ -37,12 +41,10 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   });
 
   try {
-    const outcome = await publishComment({
-      profileKey: item.account.profileKey,
+    const outcome = await publishCommentForAccount(item.account, {
       targetUrl: item.job.targetUrl,
       commentText: item.commentText,
       dryRun,
-      browserOptions: item.account,
     });
 
     await db.jobItem.update({
@@ -57,6 +59,10 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         : { status: "FAILED", lastError: outcome.message },
     });
 
+    if (outcome.ok && !dryRun) {
+      await db.account.update({ where: { id: item.account.id }, data: { lastPostAt: new Date() } });
+    }
+
     await db.jobLog.create({
       data: {
         jobId: item.jobId,
@@ -69,6 +75,13 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     await db.jobItem.update({ where: { id }, data: { status: "FAILED", lastError: message } });
+
+    if (error instanceof InstagramError && error.code === "NEEDS_LOGIN") {
+      await db.account.update({ where: { id: item.account.id }, data: { status: "NEEDS_LOGIN" } });
+    } else if (error instanceof InstagramError && error.code === "ACTION_BLOCKED") {
+      await db.account.update({ where: { id: item.account.id }, data: { status: "PAUSED" } });
+    }
+
     await db.jobLog.create({
       data: { jobId: item.jobId, level: "error", message: `@${item.account.username}: ${message}` },
     });

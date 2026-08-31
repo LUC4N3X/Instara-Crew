@@ -1,0 +1,4 @@
+# Optional runtime used only by accounts configured with executionEngine=ANDROID_ADB.
+# InstaAddict/GramAddict demonstrated the long-term viability of uiautomator2 for
+# Instagram UI automation; Instara Crew uses its own narrow comment-only bridge.
+uiautomator2>=2.16.26,<4

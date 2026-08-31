@@ -1,17 +1,13 @@
 import { Worker } from "bullmq";
 import { redis } from "./lib/redis";
 import { db } from "./lib/db";
-import { publishComment, humanDelay, sleep, InstagramError } from "./lib/instagram";
-import { closeContext } from "./lib/browser";
+import { humanDelay, sleep, InstagramError } from "./lib/instagram";
+import { closeAccountRuntime, publishCommentForAccount } from "./lib/publisher";
 import { checkAccountLimits } from "./lib/limits";
 
 async function log(jobId: string, level: string, message: string) {
   await db.jobLog.create({ data: { jobId, level, message } });
 }
-
-/* ------------------------------------------------------------------ */
-/* preparation worker: assigns one distinct comment per account        */
-/* ------------------------------------------------------------------ */
 
 const prepWorker = new Worker(
   "instara-crew.prep",
@@ -28,12 +24,12 @@ const prepWorker = new Worker(
     await log(jobId, "info", "Preparation worker started.");
 
     const accounts = await db.account.findMany({
-      where: { status: "ACTIVE" },
+      where: { status: "ACTIVE", authType: "BROWSER_SESSION" },
       orderBy: { username: "asc" },
     });
 
     if (!accounts.length) {
-      await log(jobId, "warn", "No ACTIVE accounts available for assignment.");
+      await log(jobId, "warn", "No ACTIVE Browser/Android accounts available for assignment.");
     } else {
       const used = new Map<string, number>();
       let assigned = 0;
@@ -66,7 +62,7 @@ const prepWorker = new Worker(
       await log(
         jobId,
         "info",
-        `Assegnati ${assigned} commenti distinti su ${accounts.length} account (un testo diverso per item).`
+        `Assegnati ${assigned} commenti distinti su ${accounts.length} account interattivi (Browser/Android).`
       );
     }
 
@@ -75,10 +71,6 @@ const prepWorker = new Worker(
   },
   { connection: redis, concurrency: 2 }
 );
-
-/* ------------------------------------------------------------------ */
-/* publication worker: real Playwright posting, grouped per account    */
-/* ------------------------------------------------------------------ */
 
 type RunnableItem = {
   id: string;
@@ -90,6 +82,10 @@ type AccountGroup = {
   accountId: string;
   username: string;
   profileKey: string;
+  authType: string;
+  executionEngine: string;
+  adbSerial: string | null;
+  androidPackage: string | null;
   proxyUrl: string | null;
   devicePreset: string;
   customUserAgent: string | null;
@@ -116,7 +112,7 @@ async function runAccountGroup(
   group: AccountGroup,
   burst: boolean
 ) {
-  let posted = 0;
+  let succeeded = 0;
 
   for (let i = 0; i < group.items.length; i++) {
     if (await jobIsStopped(jobId)) {
@@ -125,9 +121,6 @@ async function runAccountGroup(
     }
 
     const item = group.items[i];
-
-    // Rate guard before every single comment (hourly/daily volume, min gap,
-    // allowed hours). Keeps each profile inside human-plausible activity.
     const account = await db.account.findUnique({
       where: { id: group.accountId },
       select: { id: true, username: true, lastPostAt: true, status: true },
@@ -141,7 +134,12 @@ async function runAccountGroup(
     if (!verdict.allowed && verdict.waitMs) {
       await log(jobId, "info", `@${group.username}: attendo ${Math.round(verdict.waitMs / 1000)}s (intervallo minimo).`);
       await sleep(verdict.waitMs);
-      verdict = await checkAccountLimits({ ...account, lastPostAt: account.lastPostAt });
+      const refreshed = await db.account.findUnique({
+        where: { id: group.accountId },
+        select: { id: true, username: true, lastPostAt: true, status: true },
+      });
+      if (!refreshed || refreshed.status !== "ACTIVE") break;
+      verdict = await checkAccountLimits(refreshed);
     }
     if (!verdict.allowed) {
       await db.jobItem.update({
@@ -158,25 +156,14 @@ async function runAccountGroup(
     });
 
     try {
-      const outcome = await publishComment({
-        profileKey: group.profileKey,
+      const outcome = await publishCommentForAccount(group, {
         targetUrl,
         commentText: item.commentText,
         dryRun,
-        browserOptions: {
-          proxyUrl: group.proxyUrl,
-          devicePreset: group.devicePreset,
-          customUserAgent: group.customUserAgent,
-          viewportWidth: group.viewportWidth,
-          viewportHeight: group.viewportHeight,
-          deviceScaleFactor: group.deviceScaleFactor,
-          isMobile: group.isMobile,
-          hasTouch: group.hasTouch,
-        },
       });
 
       if (outcome.ok) {
-        posted++;
+        succeeded++;
         await db.jobItem.update({
           where: { id: item.id },
           data: {
@@ -186,10 +173,9 @@ async function runAccountGroup(
             lastError: dryRun ? outcome.message : null,
           },
         });
-        await db.account.update({
-          where: { id: group.accountId },
-          data: { lastPostAt: new Date() },
-        });
+        if (!dryRun) {
+          await db.account.update({ where: { id: group.accountId }, data: { lastPostAt: new Date() } });
+        }
         await log(jobId, "info", `@${group.username} · #${item.position + 1}: ${outcome.message}`);
       } else {
         await db.jobItem.update({
@@ -200,10 +186,7 @@ async function runAccountGroup(
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      await db.jobItem.update({
-        where: { id: item.id },
-        data: { status: "FAILED", lastError: message },
-      });
+      await db.jobItem.update({ where: { id: item.id }, data: { status: "FAILED", lastError: message } });
       await log(jobId, "error", `@${group.username} · #${item.position + 1}: ${message}`);
 
       if (error instanceof InstagramError && error.code === "NEEDS_LOGIN") {
@@ -218,18 +201,14 @@ async function runAccountGroup(
 
     if (!burst && i < group.items.length - 1) {
       const wait = humanDelay(group.minDelaySec, group.maxDelaySec);
-      await log(
-        jobId,
-        "info",
-        `@${group.username}: attesa ${Math.round(wait / 1000)}s prima del prossimo commento.`
-      );
+      await log(jobId, "info", `@${group.username}: attesa ${Math.round(wait / 1000)}s prima del prossimo commento.`);
       await sleep(wait);
     }
   }
 
   if (!burst && group.cooldownSec > 0) await sleep(group.cooldownSec * 1000);
-  await closeContext(group.profileKey);
-  return posted;
+  await closeAccountRuntime(group).catch(() => undefined);
+  return succeeded;
 }
 
 async function runWithConcurrency<T>(tasks: (() => Promise<T>)[], limit: number) {
@@ -266,29 +245,20 @@ const postWorker = new Worker(
     if (!job) throw new Error(`Job ${jobId} not found`);
 
     await db.job.update({ where: { id: jobId }, data: { status: "RUNNING" } });
-    await log(
-      jobId,
-      "info",
-      `Pubblicazione avviata (${job.dryRun ? "DRY-RUN: nessun invio" : "LIVE: invio reale"}).`
-    );
+    await log(jobId, "info", `Pubblicazione avviata (${job.dryRun ? "DRY-RUN: nessun invio" : "LIVE: invio reale"}).`);
 
     const groups = new Map<string, AccountGroup>();
     for (const item of job.items) {
       if (!item.account) continue;
-      if (item.account.status !== "ACTIVE") {
+      if (item.account.status !== "ACTIVE" || item.account.authType !== "BROWSER_SESSION") {
         await db.jobItem.update({
           where: { id: item.id },
-          data: { status: "FAILED", lastError: `Account @${item.account.username} non ACTIVE.` },
+          data: { status: "FAILED", lastError: `Account @${item.account.username} non disponibile per il runtime interattivo.` },
         });
         continue;
       }
 
-      const entry: RunnableItem = {
-        id: item.id,
-        position: item.position,
-        commentText: item.commentText,
-      };
-
+      const entry: RunnableItem = { id: item.id, position: item.position, commentText: item.commentText };
       const existing = groups.get(item.account.id);
       if (existing) {
         existing.items.push(entry);
@@ -297,6 +267,10 @@ const postWorker = new Worker(
           accountId: item.account.id,
           username: item.account.username,
           profileKey: item.account.profileKey,
+          authType: item.account.authType,
+          executionEngine: item.account.executionEngine,
+          adbSerial: item.account.adbSerial,
+          androidPackage: item.account.androidPackage,
           proxyUrl: item.account.proxyUrl,
           devicePreset: item.account.devicePreset,
           customUserAgent: item.account.customUserAgent,
@@ -314,12 +288,11 @@ const postWorker = new Worker(
     }
 
     if (groups.size === 0) {
-      await log(jobId, "warn", "Nessun item pubblicabile (account mancanti o non attivi).");
+      await log(jobId, "warn", "Nessun item pubblicabile (account mancanti, Meta OAuth o non attivi).");
       await db.job.update({ where: { id: jobId }, data: { status: "READY" } });
       return;
     }
 
-    // Burst: every assigned account posts at once, no pacing between comments.
     const burst = queueJob.data.burst === true || process.env.BURST_MODE === "true";
     const concurrency = burst
       ? Math.max(1, Number(process.env.BURST_CONCURRENCY || groups.size))
@@ -330,8 +303,7 @@ const postWorker = new Worker(
       return runAccountGroup(jobId, job.dryRun, job.targetUrl, group, burst);
     });
 
-    const posted = (await runWithConcurrency(tasks, concurrency)).reduce((a, b) => a + b, 0);
-
+    const succeeded = (await runWithConcurrency(tasks, concurrency)).reduce((a, b) => a + b, 0);
     const remaining = await db.jobItem.count({
       where: { jobId, status: { in: ["READY", "QUEUED", "POSTING", "OPENED"] } },
     });
@@ -349,21 +321,14 @@ const postWorker = new Worker(
             : "READY";
 
     await db.job.update({ where: { id: jobId }, data: { status: finalStatus } });
-    await log(
-      jobId,
-      failed > 0 ? "warn" : "info",
-      `Run terminato: ${posted} ok, ${failed} falliti, ${remaining} in sospeso. Stato: ${finalStatus}.`
-    );
+    await log(jobId, failed > 0 ? "warn" : "info", `Run terminato: ${succeeded} ok, ${failed} falliti, ${remaining} in sospeso. Stato: ${finalStatus}.`);
   },
   { connection: redis, concurrency: 1 }
 );
 
-for (const [name, worker] of [
-  ["prep", prepWorker],
-  ["post", postWorker],
-] as const) {
+for (const [name, worker] of [["prep", prepWorker], ["post", postWorker]] as const) {
   worker.on("completed", (queueJob) => console.log(`[${name}] completed ${queueJob.id}`));
   worker.on("failed", (queueJob, err) => console.error(`[${name}] failed ${queueJob?.id}`, err));
 }
 
-console.log("Instara Crew worker running (prep + post).");
+console.log("Instara Crew worker running (prep + post, Browser/Android runtimes).");

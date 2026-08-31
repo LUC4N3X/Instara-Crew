@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { openTargetForOperator } from "@/lib/browser";
+import { openTargetForAccount } from "@/lib/publisher";
 
 export async function POST(_: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
@@ -12,7 +12,11 @@ export async function POST(_: Request, context: { params: Promise<{ id: string }
   if (!item) return Response.json({ error: "Item not found" }, { status: 404 });
   if (!item.account) return Response.json({ error: "No account assigned" }, { status: 409 });
 
-  await openTargetForOperator(item.account.profileKey, item.job.targetUrl, item.account);
+  try {
+    await openTargetForAccount(item.account, item.job.targetUrl);
+  } catch (error) {
+    return Response.json({ error: error instanceof Error ? error.message : String(error) }, { status: 409 });
+  }
 
   await db.jobItem.update({
     where: { id },
@@ -23,9 +27,9 @@ export async function POST(_: Request, context: { params: Promise<{ id: string }
     data: {
       jobId: item.jobId,
       level: "info",
-      message: `Opened target for @${item.account.username}, item ${item.position + 1}.`,
+      message: `Opened target for @${item.account.username} (${item.account.executionEngine}), item ${item.position + 1}.`,
     },
   });
 
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, engine: item.account.executionEngine });
 }

@@ -13,6 +13,11 @@ enum AccountStatus {
   NEEDS_LOGIN
 }
 
+enum ExecutionEngine {
+  BROWSER
+  ANDROID_ADB
+}
+
 enum JobStatus {
   DRAFT
   PREPARING
@@ -35,33 +40,36 @@ enum ItemStatus {
 }
 
 model Account {
-  id          String        @id @default(cuid())
-  username    String        @unique
-  label       String?
-  profileKey      String        @unique
-  status          AccountStatus @default(NEEDS_LOGIN)
-  authType        String        @default("BROWSER_SESSION")
-  igUserId        String?
+  id                   String          @id @default(cuid())
+  username             String          @unique
+  label                String?
+  profileKey           String          @unique
+  status               AccountStatus   @default(NEEDS_LOGIN)
+  authType             String          @default("BROWSER_SESSION")
+  executionEngine      ExecutionEngine @default(BROWSER)
+  adbSerial            String?
+  androidPackage       String          @default("com.instagram.android")
+  igUserId             String?
   encryptedAccessToken String?
-  tokenExpiresAt  DateTime?
-  accountType     String?
-  proxyUrl        String?
-  devicePreset    String        @default("PIXEL_7")
-  customUserAgent String?
-  viewportWidth   Int?
-  viewportHeight  Int?
-  deviceScaleFactor Float?
-  isMobile        Boolean       @default(true)
-  hasTouch        Boolean       @default(true)
-  minDelaySec     Int           @default(20)
-  maxDelaySec Int           @default(60)
-  cooldownSec Int           @default(120)
-  maxPerRun   Int           @default(0)
-  lastPostAt  DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  tokenExpiresAt       DateTime?
+  accountType          String?
+  proxyUrl             String?
+  devicePreset         String          @default("PIXEL_7")
+  customUserAgent      String?
+  viewportWidth        Int?
+  viewportHeight       Int?
+  deviceScaleFactor    Float?
+  isMobile             Boolean         @default(true)
+  hasTouch             Boolean         @default(true)
+  minDelaySec          Int             @default(20)
+  maxDelaySec          Int             @default(60)
+  cooldownSec          Int             @default(120)
+  maxPerRun            Int             @default(0)
+  lastPostAt           DateTime?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
 
-  items       JobItem[]
+  items                JobItem[]
 }
 
 model Job {
