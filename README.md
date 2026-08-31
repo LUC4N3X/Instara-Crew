@@ -1,123 +1,189 @@
 <p align="center">
-  <img src="public/logo.png" width="220" alt="Instara Crew Logo" style="border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);" />
-</p>
-
-<h1 align="center">Instara Crew</h1>
-
-<p align="center">
-  <b>Dual-Engine Instagram Operations Console</b><br>
-  Gemini Multimodal AI · Meta Graph API OAuth 2.0 (100% Policy Compliant) · Playwright Mobile Stealth & Per-Account Proxies
+  <a href="https://github.com/LUC4N3X/Instara-Crew">
+    <img src="public/logo.png" width="100%" style="max-width: 820px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7); display: block; margin: 0 auto;" alt="Instara Crew Banner" />
+  </a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Next.js-15+-black?style=flat&logo=next.js" alt="Next.js" />
-  <img src="https://img.shields.io/badge/Playwright-Stealth%20%26%20Mobile-green?style=flat&logo=playwright" alt="Playwright" />
-  <img src="https://img.shields.io/badge/Meta_Graph_API-OAuth_2.0-blue?style=flat&logo=instagram" alt="Meta Graph API" />
-  <img src="https://img.shields.io/badge/Gemini-Vertex_AI-purple?style=flat&logo=google" alt="Gemini AI" />
-  <img src="https://img.shields.io/badge/TypeScript-Strict-blue?style=flat&logo=typescript" alt="TypeScript" />
+  <a href="https://github.com/LUC4N3X/Instara-Crew/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License" /></a>
+  <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-15+-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" /></a>
+  <a href="https://playwright.dev"><img src="https://img.shields.io/badge/Playwright-Stealth_%26_Mobile-45ba4b?style=for-the-badge&logo=playwright&logoColor=white" alt="Playwright" /></a>
+  <a href="https://developers.facebook.com/docs/instagram-platform"><img src="https://img.shields.io/badge/Meta_Graph_API-OAuth_2.0-0081FB?style=for-the-badge&logo=meta&logoColor=white" alt="Meta Graph API" /></a>
+  <a href="https://cloud.google.com/vertex-ai"><img src="https://img.shields.io/badge/Gemini_Multimodal-Vertex_AI-8E75FF?style=for-the-badge&logo=googlecloud&logoColor=white" alt="Gemini Multimodal" /></a>
+  <a href="https://www.typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-Strict_Mode-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
 </p>
 
 ---
 
-## 🚀 Architettura Dual-Engine
+<h3 align="center">
+  ⚡ <b>Next-Generation Instagram Operations Console & Multi-Account Automation Platform</b> ⚡
+</h3>
 
-Instara Crew combina due motori operativi complementari per soddisfare qualsiasi esigenza di automazione:
-
-### 💎 Engine B: Meta Graph API Ufficiale (Zero Rischio & 100% a Norma)
-- **Login Ufficiale Instagram / Meta OAuth 2.0**: connessione autorizzata per account Business e Creator.
-- **Token a Lunga Durata (60 Giorni)**: cifrati a riposo nel database con crittografia `AES-256-GCM`.
-- **Zero rischio di blocco**: chiamate REST ufficiali a `graph.instagram.com`.
-- **Operazioni**: lettura owned media, moderazione e risposte ufficiali ai commenti, pubblicazione diretta di immagini e Reel.
-
-### 📱 Engine A: Stealth Browser, Proxy Dedicati & Mobile Touch
-- **Proxy Dedicato per Account**: supporto HTTP, HTTPS, SOCKS5 e formato provider `ip:port:user:pass` con test di latenza in tempo reale.
-- **Emulazione Mobile ad Alta Fedeltà**: preset realistici per **Google Pixel 7 (Android 14)**, **Samsung Galaxy S24** e **iPhone 15 Pro** con viewport, DPR, multi-touch (`maxTouchPoints: 5`) e Client Hints.
-- **Protezione Anti-Detection & WebRTC Leak**: isolamento Chromium con `--force-webrtc-ip-handling-policy=disable_non_proxied_udp` e reset di `navigator.webdriver`.
-- **Pacing Umano & Anti-Spam**: commenti unici generati da Gemini per ogni account, pause casuali (`minDelaySec`-`maxDelaySec`), cooldown e orari attivi.
+<p align="center">
+  <b>Instara Crew</b> is an enterprise-grade suite engineered for large-scale Instagram workflow management, moderation, and automated operations.<br>
+  Featuring a cutting-edge <b>Dual-Engine Hybrid Architecture</b>, it combines the 100% compliance of <b>Official Meta Graph APIs (Zero Ban Risk)</b> with the advanced capabilities of <b>Playwright Mobile Stealth Emulation with Dedicated Proxies</b> and the contextual vision intelligence of <b>Google Gemini AI</b>.
+</p>
 
 ---
 
-## 📋 Requisiti di Sistema
+## 🏛️ Dual-Engine Architecture
 
+Instara Crew bridges the gap between official API compliance and multi-account browser automation:
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                               INSTARA CREW CORE PLATFORM                                 │
+├────────────────────────────────────────────┬─────────────────────────────────────────────┤
+│  💎 ENGINE B: Official Meta Graph API      │  📱 ENGINE A: Stealth Browser & Proxies     │
+│  (100% Policy Compliant / Zero Risk)       │  (Multi-Account Mobile / Anti-Detection)    │
+├────────────────────────────────────────────┼─────────────────────────────────────────────┤
+│  • Official Instagram OAuth 2.0 Login      │  • Dedicated HTTP / HTTPS / SOCKS5 Proxies  │
+│  • AES-256-GCM Encrypted Long-Lived Tokens │  • Real Pixel 7, Galaxy S24, iPhone Presets │
+│  • Official comment moderation & replies   │  • Real Multi-Touch & WebRTC Leak Shield    │
+│  • Native Image & Reel publishing          │  • Stochastic Human Pacing & Uniqueness db  │
+│  • ZERO risk of captcha, challenge, or ban │  • Isolated Persistent Browser Profiles     │
+└────────────────────────────────────────────┴─────────────────────────────────────────────┘
+```
+
+---
+
+## 🌟 Key Features
+
+### 1. 💎 Engine B: Official Meta Graph API & OAuth 2.0 (Zero-Risk Engine)
+- **Official Instagram OAuth Flow**: Standard authorization for Business & Creator accounts with automatic code exchange for **60-Day Long-Lived Access Tokens**.
+- **Hardware-Grade Token Encryption**: Access tokens are encrypted at rest using `AES-256-GCM` before being stored in the database.
+- **Zero Passwords Stored**: Fully adheres to Meta Developer Policies.
+- **1-Click Token Refresh & Healthcheck**: Real-time validation of API health, permissions, and token expiry countdown in dashboard.
+
+### 2. 📱 Engine A: High-Fidelity Mobile Emulation & Dedicated Proxies
+- **Multi-Protocol Proxy Support**: Seamless support for `http://`, `https://`, `socks5://`, and colon-formatted strings (`host:port:user:pass` or `host:port`).
+- **Real-Time Proxy Diagnostics**: Live ping and external IP verification directly from the UI before launching browser tasks.
+- **Advanced Stealth Fingerprinting**:
+  - `navigator.webdriver` completely scrubbed (`undefined`).
+  - True mobile touch emulation (`navigator.maxTouchPoints = 5`, `ontouchstart` window events).
+  - Consistent Client Hints (`Sec-CH-UA-Platform: Android / iOS`) and native hardware screen aspect ratios.
+- **WebRTC IP Leak Defense**: Chromium launch flags enforce UDP blocking to prevent local IP discovery.
+- **Responsive Instagram Mobile UI Handlers**: Native automation of mobile comment drawers, bottom sheets, and app-install overlay dismissals.
+
+### 3. ✦ Gemini Multimodal AI Composer
+- **Visual Post Comprehension**: Gemini inspects the image or screenshot to extract contextual nuances, mood, lighting, and aesthetic subjects.
+- **Unique Semantic Generation**: Produces up to 100 uniquely worded comments per run, customizable by tone (*Natural, Casual, Enthusiastic, Elegant, Minimal*).
+- **Atomic Database Constraints**: Every connected account receives an exclusive comment enforced by database-level unique keys (`@@unique([jobId, commentText])`).
+
+### 4. 🛡️ Safety Guardrails & Human Pacing
+- **Stochastic Delays**: Natural typing simulation with randomized intervals between `minDelaySec` and `maxDelaySec`.
+- **Hourly & Daily Caps**: Automated throttling guards (`ACCOUNT_MAX_PER_HOUR`, `ACCOUNT_MAX_PER_DAY`, `ACTIVE_HOUR_FROM` to `ACTIVE_HOUR_TO`).
+- **Dry-Run Mode**: Types comments and tests selector integrity without submitting to live posts.
+- **Instant Circuit Breaker**: Live Pause, Resume, and Cancel buttons with immediate account deactivation upon detecting security checkpoints.
+
+---
+
+## 🛠️ Quickstart & Setup Guide
+
+### 1. Prerequisites
 - **Node.js**: 20+ LTS
-- **Docker Desktop**: per PostgreSQL e Redis
-- **Google Cloud CLI**: per Gemini su Vertex AI (nessuna API key esposta)
-- **Meta Developer App** *(opzionale per Engine B)*: con prodotto *Instagram Graph API* e *Instagram Login*
+- **Docker & Docker Compose** (for PostgreSQL and Redis)
+- **Google Cloud CLI** (for Gemini on Vertex AI)
 
----
-
-## 🛠️ Avvio Rapido
-
-### 1. Clona e installa le dipendenze
+### 2. Clone & Install
 ```bash
+# Clone the repository
 git clone https://github.com/LUC4N3X/Instara-Crew.git
 cd Instara-Crew
+
+# Install dependencies and Playwright Chromium
 npm install
 npx playwright install chromium
 ```
 
-### 2. Avvia i servizi database & cache
+### 3. Start Database & Cache
 ```bash
 docker compose up -d
 ```
 
-### 3. Configura le variabili d'ambiente
+### 4. Environment Configuration
 ```bash
 cp .env.example .env
 ```
 
-Genera una chiave crittografica per la cifratura dei token a riposo:
+Generate a 256-bit encryption key for securing OAuth tokens:
 ```powershell
 $key = New-Object byte[] 32
 [Security.Cryptography.RandomNumberGenerator]::Fill($key)
 [Convert]::ToBase64String($key)
 ```
-Incolla la stringa generata in `SESSION_ENCRYPTION_KEY_BASE64` nel file `.env`.
+Paste the generated base64 string into `SESSION_ENCRYPTION_KEY_BASE64` in `.env`.
 
-### 4. Autenticazione Google Cloud (Gemini Multimodale)
+### 5. Authenticate Google Cloud (Gemini Vision AI)
 ```bash
 gcloud auth login
 gcloud auth application-default login
-gcloud config set project IL_TUO_PROJECT_ID
+gcloud config set project YOUR_PROJECT_ID
 gcloud services enable aiplatform.googleapis.com
 ```
 
-### 5. Setup Database e Avvio Console
+### 6. Run Migrations & Start Console
 ```bash
 npm run prisma:generate
 npm run prisma:migrate
 npm run dev:all
 ```
-
-Apri la dashboard su **http://localhost:3000** 🚀
+Open your browser at **http://localhost:3000** 🚀
 
 ---
 
-## 🧪 Suite di Test e Verifica
+## 🧪 Comprehensive Verification Suite
 
-Il progetto include guardrail di sicurezza e simulatore end-to-end senza toccare account reali:
+Run the full automated test suite anytime with:
 
 ```bash
 npm run test
 ```
 
-- `typecheck` — Verifica tipi TypeScript rigorosi (0 errori).
-- `test:guardrails` — Invarianti di sicurezza (blocco domini non-Instagram, rate limit, dry-run).
-- `test:selftest` — Test E2E completo:
-  - Validazione e parsing proxy multi-formato (HTTP/SOCKS5/colon).
-  - Risoluzione preset mobile e fingerprinting stealth in Playwright.
-  - Crittografia `AES-256-GCM` dei token OAuth Meta.
-  - Simulazione pubblicazione e gestione layout responsive mobile/desktop.
+```text
+> instara-crew@0.1.0 test
+> npm run typecheck && npm run test:guardrails && npm run test:selftest
+
+  PASS  Test 1: Proxy Parser & Formats (HTTP, SOCKS5, colon host:port:user:pass)
+  PASS  Test 2: Mobile Device Presets (Pixel 7, Galaxy S24, iPhone 15 Pro, Desktop)
+  PASS  Test 3: Mobile Stealth in Playwright (navigator.webdriver undefined, maxTouchPoints: 5)
+  PASS  Test 4: AES-256 Token Encryption & Meta OAuth Helpers
+  PASS  Test 5: Instagram Automation Scenarios (Desktop, Mobile Tray, Dry-Run, Needs-Login)
+
+All automated checks passed successfully!
+```
 
 ---
 
-## 🛡️ Best Practice di Sicurezza
-- Inizia sempre con **Dry-run attivo** per validare selettori e layout.
-- Per Engine A, utilizza sempre **Proxy Residenziali o Mobile 4G/5G** statici (1 account = 1 proxy dedicato).
-- Rispetta il riscaldamento dell'account (*warm-up*): max 3-5 commenti/giorno la prima settimana, max 10-15 a regime.
-- Per account aziendali/creator del proprio brand, utilizza **Engine B (Meta OAuth)** per totale conformità e zero rischio di blocco.
+## ⚖️ LEGAL DISCLAIMER & LIMITATION OF LIABILITY
+
+> [!IMPORTANT]
+> **PLEASE READ THIS SECTION CAREFULLY BEFORE USING THIS SOFTWARE.**
+
+### 1. Non-Affiliation with Meta Platforms, Inc.
+**Instara Crew** is an independent, open-source software project developed exclusively for research, educational, and workflow management purposes.
+* **Instagram®**, **Meta®**, and all associated trademarks, logos, brand names, and intellectual property are registered trademarks of **Meta Platforms, Inc.**
+* This software is **NOT** affiliated, sponsored, authorized, endorsed, maintained, or in any way officially associated with Meta Platforms, Inc., Instagram, or any of their subsidiaries or affiliates.
+
+### 2. Educational & Research Purpose
+This software is provided strictly for **educational, academic, testing, and technical evaluation purposes** related to browser automation architectures, artificial intelligence workflows, and official REST APIs. Any operational use of this software to interact with third-party platforms is done entirely at the sole discretion, initiative, and risk of the end user.
+
+### 3. Complete Disclaimer of Warranties & Total Limitation of Liability (AS-IS)
+THE SOFTWARE IS PROVIDED **"AS IS"**, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+
+UNDER NO CIRCUMSTANCES SHALL THE AUTHORS, DEVELOPERS, MAINTAINERS, OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, LOSSES, OR LIABILITIES, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE, MISUSE, INABILITY TO USE, OR PERFORMANCE OF THE SOFTWARE. THIS INCLUDES, WITHOUT LIMITATION:
+- ACCOUNT RESTRICTIONS, TEMPORARY OR PERMANENT BANS, ACTION BLOCKS, OR SECURITY CHALLENGES IMPOSED BY INSTAGRAM/META;
+- LOSS OF DATA, REVENUE, GOODWILL, OR BUSINESS INTERRUPTION;
+- ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
+
+### 4. End-User Compliance & Responsibility
+It is the sole and exclusive responsibility of the end user to:
+1. Comply with the [Instagram Terms of Use](https://help.instagram.com/581066165581870) and [Community Guidelines](https://help.instagram.com/477434105621119);
+2. Ensure full compliance with all applicable local, national, and international laws and regulations regarding data protection, privacy, and automated communications;
+3. Use responsible rates, delays, and volumes that do not abuse or degrade third-party server infrastructure.
 
 ---
 
-## 📄 Licenza
-Rilasciato sotto licenza MIT.
+## 📜 License
+
+Distributed under the **MIT License**. See `LICENSE` for more information.
