@@ -154,6 +154,13 @@ It is the sole responsibility of the end user to comply with [Instagram Terms of
 
 ---
 
+## Author & Acknowledgements
+
+* **Creator & Lead Architect**: [LUC4N3X](https://github.com/LUC4N3X)
+* **Core Technologies**: Built with [Next.js](https://nextjs.org/), [Playwright](https://playwright.dev/), [Meta Graph API](https://developers.facebook.com/docs/instagram-platform), [Google Gemini Multimodal AI](https://cloud.google.com/vertex-ai), [Prisma ORM](https://www.prisma.io/), and [BullMQ](https://bullmq.io/).
+
+---
+
 ## License
- 
+
 Released under the **GNU General Public License v3.0 (GPL-3.0)**. See [`LICENSE`](LICENSE) for details.
