@@ -1,7 +1,7 @@
 #!/bin/bash
 set -Eeuo pipefail
 
-RESOURCES_DIR="$2"
+RESOURCES_DIR="$1"
 APP_ROOT="$RESOURCES_DIR/app"
 RUNTIME_ROOT="$RESOURCES_DIR/runtime"
 DATA_ROOT="$HOME/Library/Application Support/Instara Crew"
