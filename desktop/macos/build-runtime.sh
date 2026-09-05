@@ -95,7 +95,8 @@ ditto "$PYTHON_EXTRACT/python" "$PYTHON_STAGE"
 "$PYTHON_STAGE/bin/python3" -c 'import uiautomator2; print("uiautomator2 ready")'
 
 echo "Building native macOS shell..."
-/usr/bin/swiftc -O -framework Cocoa -framework WebKit "$PROJECT_ROOT/desktop/macos/Launcher.swift" -o "$MACOS_DIR/Instara-Crew"
+SWIFTC="$(/usr/bin/xcrun --find swiftc)"
+"$SWIFTC" -O -framework Cocoa -framework WebKit "$PROJECT_ROOT/desktop/macos/Launcher.swift" -o "$MACOS_DIR/Instara-Crew"
 chmod +x "$MACOS_DIR/Instara-Crew"
 cp "$PROJECT_ROOT/desktop/macos/runtime.sh" "$RESOURCES/runtime.sh"
 chmod +x "$RESOURCES/runtime.sh"
