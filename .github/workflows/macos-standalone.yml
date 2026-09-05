@@ -1,0 +1,95 @@
+name: macOS Standalone
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/macos-standalone.yml"
+      - "desktop/macos/**"
+      - "scripts/migrate-bullmq-postgres.mjs"
+      - "src/lib/redis.ts"
+      - "src/app/layout.tsx"
+      - "package.json"
+      - "package-lock.json"
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: macos-standalone-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-macos-standalone:
+    name: Build macOS ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Apple Silicon
+            runner: macos-15
+            artifact: Apple-Silicon
+          - name: Intel
+            runner: macos-15-intel
+            artifact: Intel
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: "0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.19.0"
+          cache: npm
+
+      - name: Install application dependencies
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false pg@8
+
+      - name: Install bundled Playwright Chromium
+        run: npx playwright install chromium
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build production application
+        run: npm run build
+
+      - name: Assemble macOS app and DMG
+        run: |
+          chmod +x desktop/macos/build-runtime.sh desktop/macos/runtime.sh desktop/macos/smoke-test.sh
+          ./desktop/macos/build-runtime.sh
+
+      - name: Smoke-test bundled runtime
+        run: ./desktop/macos/smoke-test.sh "${RUNNER_TEMP}/instara-macos-standalone/Instara Crew.app"
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Instara-Crew-macOS-${{ matrix.artifact }}-by-LUC4N3X
+          path: desktop-dist/*
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Publish GitHub Release assets
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            desktop-dist/*.dmg
+            desktop-dist/*.zip
+            desktop-dist/SHA256-*.txt
+          generate_release_notes: true
+          name: "Instara Crew ${{ github.ref_name }} - by LUC4N3X"
