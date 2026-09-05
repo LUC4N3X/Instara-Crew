@@ -45,19 +45,14 @@ Write-Host "Packing embedded PostgreSQL..."
 $pgTemp = Join-Path $env:RUNNER_TEMP "instara-postgres-package"
 Remove-Item $pgTemp -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $pgTemp | Out-Null
-Push-Location $pgTemp
-try {
-  $tgz = (& npm pack "@embedded-postgres/windows-x64@18.4.0-beta.17" --silent | Select-Object -Last 1).Trim()
-  if (-not $tgz) { throw "npm pack did not return an archive name" }
-  tar -xf $tgz
-  $native = Join-Path $pgTemp "package\native"
-  if (-not (Test-Path (Join-Path $native "bin\postgres.exe"))) { throw "Embedded PostgreSQL package is incomplete" }
-  & robocopy $native $PostgresStage /E /NFL /NDL /NJH /NJS /NP | Out-Null
-  if ($LASTEXITCODE -ge 8) { throw "Failed to copy embedded PostgreSQL" }
-  Copy-Item (Join-Path $pgTemp "package\LICENSE.md") (Join-Path $PostgresStage "LICENSE.md") -Force -ErrorAction SilentlyContinue
-} finally {
-  Pop-Location
-}
+& npm install --prefix $pgTemp --no-save --package-lock=false "@embedded-postgres/windows-x64@18.4.0-beta.17"
+if ($LASTEXITCODE -ne 0) { throw "Failed to install embedded PostgreSQL package" }
+$pgPackageRoot = Join-Path $pgTemp "node_modules\@embedded-postgres\windows-x64"
+$native = Join-Path $pgPackageRoot "native"
+if (-not (Test-Path (Join-Path $native "bin\postgres.exe"))) { throw "Embedded PostgreSQL package is incomplete" }
+& robocopy $native $PostgresStage /E /NFL /NDL /NJH /NJS /NP | Out-Null
+if ($LASTEXITCODE -ge 8) { throw "Failed to copy embedded PostgreSQL" }
+Copy-Item (Join-Path $pgPackageRoot "LICENSE.md") (Join-Path $PostgresStage "LICENSE.md") -Force -ErrorAction SilentlyContinue
 
 Write-Host "Packing Android Platform Tools..."
 $platformToolsZip = Join-Path $env:RUNNER_TEMP "platform-tools.zip"
