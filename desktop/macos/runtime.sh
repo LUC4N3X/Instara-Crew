@@ -136,7 +136,7 @@ status "Avvio PostgreSQL embedded…"
 "$PG_BIN/postgres" -D "$PGDATA" -h 127.0.0.1 -p "$PGPORT" >>"$LOG_ROOT/postgres.log" 2>&1 &
 POSTGRES_PID=$!
 
-for _ in $(seq 1 120); do
+for ((i=0; i<120; i++)); do
   if "$PG_BIN/pg_isready" -h 127.0.0.1 -p "$PGPORT" -U instara >/dev/null 2>&1; then break; fi
   if ! kill -0 "$POSTGRES_PID" 2>/dev/null; then
     echo "PostgreSQL exited before becoming ready" >&2
@@ -176,7 +176,7 @@ WEB_PID=$!
 "$NODE" node_modules/tsx/dist/cli.mjs src/worker.ts >>"$LOG_ROOT/worker.log" 2>&1 &
 WORKER_PID=$!
 
-for _ in $(seq 1 120); do
+for ((i=0; i<120; i++)); do
   if /usr/bin/curl -fsS --max-time 1 "$APP_URL" >/dev/null 2>&1; then break; fi
   if ! kill -0 "$WEB_PID" 2>/dev/null; then
     echo "Next.js exited before becoming ready" >&2
