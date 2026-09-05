@@ -1,5 +1,6 @@
 import Cocoa
 import WebKit
+import Darwin
 
 final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
     private var window: NSWindow!
@@ -7,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
     private var statusLabel: NSTextField!
     private var runtimeProcess: Process?
     private var runtimeReady = false
+    private var isQuitting = false
     private var stdoutBuffer = ""
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -109,7 +111,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
 
         process.terminationHandler = { [weak self] process in
             DispatchQueue.main.async {
-                guard let self else { return }
+                guard let self, !self.isQuitting else { return }
                 if !self.runtimeReady {
                     self.fail("Il runtime locale non si è avviato. Controlla i log in ~/Library/Application Support/Instara Crew/logs.")
                 } else if process.terminationStatus != 0 {
@@ -155,7 +157,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
     }
 
     private func fail(_ message: String) {
-        if NSApp.isRunning {
+        if !isQuitting {
             let alert = NSAlert()
             alert.alertStyle = .critical
             alert.messageText = "Instara Crew — by LUC4N3X"
@@ -171,6 +173,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        isQuitting = true
         guard let process = runtimeProcess, process.isRunning else { return }
         process.terminate()
         let deadline = Date().addingTimeInterval(5)
