@@ -39,13 +39,14 @@ foreach ($file in $copyFiles) {
 }
 
 $nodeExe = (Get-Command node.exe).Source
+$npmCmd = (Get-Command npm.cmd).Source
 Copy-Item $nodeExe (Join-Path $NodeStage "node.exe") -Force
 
 Write-Host "Packing embedded PostgreSQL..."
 $pgTemp = Join-Path $env:RUNNER_TEMP "instara-postgres-package"
 Remove-Item $pgTemp -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $pgTemp | Out-Null
-& npm install --prefix $pgTemp --no-save --package-lock=false "@embedded-postgres/windows-x64@18.4.0-beta.17"
+& $npmCmd install --prefix $pgTemp --no-save --package-lock=false "@embedded-postgres/windows-x64@18.4.0-beta.17"
 if ($LASTEXITCODE -ne 0) { throw "Failed to install embedded PostgreSQL package" }
 $pgPackageRoot = Join-Path $pgTemp "node_modules\@embedded-postgres\windows-x64"
 $native = Join-Path $pgPackageRoot "native"
